@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvoiceForge — Free Freelancer Invoice Generator</title>
+  <meta name="description" content="InvoiceForge is a free, open-source invoice generator for freelancers. Create professional invoices in your browser with multi-currency support, live preview, and PDF export. No sign-up, no server — your data never leaves your device.">
+  <meta name="author" content="Afzaal Ahmed">
+  <meta name="theme-color" content="#4f46e5">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="InvoiceForge — Free Freelancer Invoice Generator">
+  <meta property="og:description" content="Create professional invoices in minutes. Multi-currency, live A4 preview, print to PDF, saved locally in your browser. 100% free and open source.">
+  <meta property="og:image" content="assets/images/og-image.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="InvoiceForge — Free Freelancer Invoice Generator">
+  <meta name="twitter:description" content="A free, open-source invoice generator for freelancers. No sign-up. No server. Just open and invoice.">
+  <meta name="twitter:image" content="assets/images/og-image.svg">
+
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#editor">Skip to invoice editor</a>
+
+  <!-- ================= Header / Navigation ================= -->
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="brand" href="#" aria-label="InvoiceForge home">
+        <img class="brand-logo" src="assets/images/favicon.svg" alt="InvoiceForge logo" width="34" height="34">
+        <span class="brand-name">Invoice<em>Forge</em></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#editor">Editor</a></li>
+        <li><a href="#preview">Preview</a></li>
+        <li><a href="#saved">Saved Invoices</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button id="themeToggle" class="btn btn-ghost" type="button" aria-label="Toggle dark or light mode" aria-pressed="false">
+          <span class="theme-icon" aria-hidden="true">🌙</span>
+          <span class="theme-label">Dark</span>
+        </button>
+        <button id="printBtnTop" class="btn btn-primary" type="button">Print / PDF</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container layout">
+    <!-- ================= Editor ================= -->
+    <section id="editor" class="editor" aria-label="Invoice editor">
+      <div class="page-intro">
+        <h1>Create an invoice</h1>
+        <p>Fill in the details — the preview updates live. Everything is saved in your browser only.</p>
+      </div>
+
+      <form id="invoiceForm" novalidate>
+        <!-- Business profile -->
+        <fieldset class="card">
+          <legend>Your Business</legend>
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="bizName">Business / Your Name <span class="req" aria-hidden="true">*</span></label>
+              <input id="bizName" name="bizName" type="text" autocomplete="organization" data-bind="business.name" required>
+              <p class="field-error" data-error-for="bizName" role="alert"></p>
+            </div>
+            <div class="field">
+              <label for="bizInitial">Logo Initial</label>
+              <input id="bizInitial" name="bizInitial" type="text" maxlength="2" data-bind="business.initial" aria-describedby="bizInitialHelp">
+              <p class="field-help" id="bizInitialHelp">1–2 letters shown as your logo on the invoice.</p>
+            </div>
+            <div class="field">
+              <label for="bizEmail">Email</label>
+              <input id="bizEmail" name="bizEmail" type="email" autocomplete="email" data-bind="business.email">
+            </div>
+            <div class="field">
+              <label for="bizPhone">Phone</label>
+              <input id="bizPhone" name="bizPhone" type="tel" autocomplete="tel" data-bind="business.phone">
+            </div>
+            <div class="field grid-span-2">
+              <label for="bizAddress">Address</label>
+              <textarea id="bizAddress" name="bizAddress" rows="2" data-bind="business.address"></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Client -->
+        <fieldset class="card">
+          <legend>Bill To (Client)</legend>
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="clientName">Client Name <span class="req" aria-hidden="true">*</span></label>
+              <input id="clientName" name="clientName" type="text" data-bind="client.name" required>
+              <p class="field-error" data-error-for="clientName" role="alert"></p>
+            </div>
+            <div class="field">
+              <label for="clientCompany">Company</label>
+              <input id="clientCompany" name="clientCompany" type="text" data-bind="client.company">
+            </div>
+            <div class="field">
+              <label for="clientEmail">Email</label>
+              <input id="clientEmail" name="clientEmail" type="email" data-bind="client.email">
+            </div>
+            <div class="field">
+              <label for="clientAddress">Address</label>
+              <textarea id="clientAddress" name="clientAddress" rows="2" data-bind="client.address"></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Invoice details -->
+        <fieldset class="card">
+          <legend>Invoice Details</legend>
+          <div class="grid grid-3">
+            <div class="field">
+              <label for="invoiceNumber">Invoice Number</label>
+              <input id="invoiceNumber" name="invoiceNumber" type="text" data-bind="meta.number">
+            </div>
+            <div class="field">
+              <label for="issueDate">Issue Date</label>
+              <input id="issueDate" name="issueDate" type="date" data-bind="meta.issueDate">
+            </div>
+            <div class="field">
+              <label for="dueDate">Due Date</label>
+              <input id="dueDate" name="dueDate" type="date" data-bind="meta.dueDate">
+            </div>
+            <div class="field">
+              <label for="currency">Currency</label>
+              <select id="currency" name="currency" data-bind="meta.currency">
+                <option value="PKR">PKR — Pakistani Rupee (₨)</option>
+                <option value="USD">USD — US Dollar ($)</option>
+                <option value="EUR">EUR — Euro (€)</option>
+                <option value="GBP">GBP — British Pound (£)</option>
+                <option value="AED">AED — UAE Dirham (د.إ)</option>
+                <option value="INR">INR — Indian Rupee (₹)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="status">Status</label>
+              <select id="status" name="status" data-bind="meta.status">
+                <option value="Draft">Draft</option>
+                <option value="Sent">Sent</option>
+                <option value="Paid">Paid</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Line items -->
+        <fieldset class="card">
+          <legend>Items</legend>
+          <div class="items-head" aria-hidden="true">
+            <span class="col-desc">Description</span>
+            <span class="col-num">Qty</span>
+            <span class="col-num">Rate</span>
+            <span class="col-num">Amount</span>
+            <span class="col-action"></span>
+          </div>
+          <div id="itemsList"><!-- Item rows are rendered by script.js --></div>
+          <button id="addItemBtn" class="btn btn-secondary" type="button">+ Add Item</button>
+          <p class="field-error" data-error-for="items" role="alert"></p>
+        </fieldset>
+
+        <!-- Totals settings & notes -->
+        <fieldset class="card">
+          <legend>Totals &amp; Notes</legend>
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="discountRate">Discount (%)</label>
+              <input id="discountRate" name="discountRate" type="number" min="0" max="100" step="0.01" inputmode="decimal" data-bind="meta.discountRate">
+            </div>
+            <div class="field">
+              <label for="taxRate">Tax / VAT (%)</label>
+              <input id="taxRate" name="taxRate" type="number" min="0" max="100" step="0.01" inputmode="decimal" data-bind="meta.taxRate">
+            </div>
+            <div class="field grid-span-2">
+              <label for="notes">Notes / Payment Terms</label>
+              <textarea id="notes" name="notes" rows="3" data-bind="meta.notes" placeholder="e.g. Payment due within 14 days. Bank transfer details…"></textarea>
+            </div>
+          </div>
+
+          <dl class="totals-box" aria-label="Invoice totals">
+            <div><dt>Subtotal</dt><dd id="sumSubtotal">0.00</dd></div>
+            <div><dt>Discount</dt><dd id="sumDiscount">0.00</dd></div>
+            <div><dt>Tax / VAT</dt><dd id="sumTax">0.00</dd></div>
+            <div class="grand"><dt>Total Due</dt><dd id="sumTotal">0.00</dd></div>
+          </dl>
+        </fieldset>
+
+        <!-- Actions -->
+        <div class="actions card">
+          <button id="saveBtn" class="btn btn-primary" type="button">Save Invoice</button>
+          <button id="newBtn" class="btn btn-secondary" type="button">New Invoice</button>
+          <button id="duplicateBtn" class="btn btn-secondary" type="button">Duplicate</button>
+          <button id="printBtn" class="btn btn-dark" type="button">Print / Save as PDF</button>
+          <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+
+      <!-- Saved invoices -->
+      <section id="saved" class="card saved-panel" aria-label="Saved invoices">
+        <h2>Saved Invoices</h2>
+        <p class="muted">Stored locally in your browser (localStorage). Loading an invoice replaces the current editor contents.</p>
+        <ul id="savedList" class="saved-list"></ul>
+        <p id="savedEmpty" class="muted">No saved invoices yet. Create one and press “Save Invoice”.</p>
+      </section>
+    </section>
+
+    <!-- ================= Live Preview ================= -->
+    <section id="preview" class="preview-wrap" aria-label="Live invoice preview">
+      <div class="preview-sticky">
+        <h2 class="preview-title">Live Preview</h2>
+
+        <!-- This article is the only element printed -->
+        <article id="invoicePreview" class="invoice-doc" aria-label="Invoice document preview">
+          <header class="inv-header">
+            <div class="inv-brand">
+              <div class="inv-logo" id="pvLogo" aria-hidden="true">S</div>
+              <div>
+                <p class="inv-biz-name" id="pvBizName">Your Business</p>
+                <p class="inv-biz-meta" id="pvBizMeta"></p>
+              </div>
+            </div>
+            <div class="inv-title-block">
+              <h3 class="inv-title">INVOICE</h3>
+              <span class="status-badge" id="pvStatus">Draft</span>
+            </div>
+          </header>
+
+          <div class="inv-parties">
+            <div class="inv-party">
+              <h4>Bill To</h4>
+              <p class="inv-party-name" id="pvClientName">Client Name</p>
+              <p id="pvClientMeta"></p>
+            </div>
+            <dl class="inv-meta">
+              <div><dt>Invoice #</dt><dd id="pvNumber">INV-0001</dd></div>
+              <div><dt>Issue Date</dt><dd id="pvIssue">—</dd></div>
+              <div><dt>Due Date</dt><dd id="pvDue">—</dd></div>
+            </dl>
+          </div>
+
+          <table class="inv-table">
+            <thead>
+              <tr>
+                <th scope="col">Description</th>
+                <th scope="col" class="num">Qty</th>
+                <th scope="col" class="num">Rate</th>
+                <th scope="col" class="num">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="pvItems"></tbody>
+          </table>
+
+          <div class="inv-bottom">
+            <div class="inv-notes">
+              <h4>Notes / Payment Terms</h4>
+              <p id="pvNotes"></p>
+            </div>
+            <dl class="inv-totals">
+              <div><dt>Subtotal</dt><dd id="pvSubtotal">0.00</dd></div>
+              <div><dt>Discount</dt><dd id="pvDiscount">0.00</dd></div>
+              <div><dt>Tax / VAT</dt><dd id="pvTax">0.00</dd></div>
+              <div class="grand"><dt>Total Due</dt><dd id="pvTotal">0.00</dd></div>
+            </dl>
+          </div>
+
+          <footer class="inv-footer">
+            <p>Thank you for your business — generated with InvoiceForge.</p>
+          </footer>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= Footer ================= -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p><strong>InvoiceForge</strong> — free &amp; open source under the MIT License.</p>
+      <p class="muted">Your invoices and business profile are stored only in your own browser. Nothing is uploaded anywhere.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/script.js"></script>
+</body>
+</html>
